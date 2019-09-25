@@ -1,0 +1,8 @@
+**/data
+**/dist
+**/target
+**/build
+
+**/.gradle
+**/.idea
+**/.vscode
