@@ -6,7 +6,7 @@ rm $CWD/dist/*
 # build
 ## go
 GO=(
-    # $CWD/src/go/v1
+    $CWD/src/go/v1
     )
 
 for go_src in ${GO[@]}; do
