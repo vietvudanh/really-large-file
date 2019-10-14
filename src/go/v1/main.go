@@ -43,7 +43,6 @@ func main() {
 		if strings.Contains(name, ", ") {
 			splitsName := strings.SplitN(name, ",", 2)
 			firstNameCount[splitsName[0]]++
-
 		}
 	}
 
@@ -56,6 +55,9 @@ func main() {
 
 	fmt.Println("task 1:: ", counter)
 	fmt.Println("task 2:: ", names)
-	fmt.Println("task 3:: ", mapDateCount)
+	fmt.Println("task 3:: ")
+	for k, v := range mapDateCount {
+		fmt.Println("  ", k, ":", v)
+	}
 	fmt.Println("task 4:: ", maxName, maxVal)
 }

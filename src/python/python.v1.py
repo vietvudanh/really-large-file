@@ -36,5 +36,6 @@ for k, v in fnames_dict.items():
 
 print(f"task 1:: {count}")
 print(f"task 2:: {names_index}")
-print(f"task 3:: {date_dict}")
+print("task 3")
+print("\n".join(f"  {k}:{v}" for k, v in date_dict.items()))
 print(f"task 4:: {max_fname}; {fnames_dict[max_fname]}")
