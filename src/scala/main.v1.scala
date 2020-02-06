@@ -20,7 +20,7 @@ object App {
     for(line <- bufferedSource.getLines()) {
       idx += 1
 
-      val Array(_, _, _, _, dateRaw, _, _, name, rest) = line.split("|", 9)
+      val Array(_, _, _, _, dateRaw, _, _, name, rest) = line.split("\\|", 9)
       val date = dateRaw.slice(0, 6)
       mapDate.update(date, mapDate(date) + 1)
 
@@ -29,8 +29,8 @@ object App {
       }
 
       if (name.contains(", ")) {
-        val Array(firstName, lastName, rest) = name.split(", ")
-        mapFirstName.update(firstName, mapFirstName(firstName) + 1)
+        val Array(firstName, rest) = name.split(", ", 2)
+        mapFirstName(firstName) = mapFirstName.getOrElse(firstName, 0 ) + 1
       }
     }
 
@@ -49,8 +49,8 @@ object App {
     println("task 2:: " + nameIds.mkString(", "))
     println("task 3 ")
     for((k, v) <- mapDate) {
-      println(f"${k}:{v}")
+      println(f"    ${k}:${v}")
     }
-    println("task 4 " + maxFirstName + " " + mapFirstName(maxFirstName))
+    println("task 4 " + maxFirstName + " " + mapFirstName.getOrElse(maxFirstName, "UKN"))
   }
 }

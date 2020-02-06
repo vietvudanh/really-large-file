@@ -6,7 +6,7 @@ rm $CWD/dist/*
 # build
 ## go
 GO=(
-#    $CWD/src/go/v1
+   $CWD/src/go/v1
     )
 
 for go_src in ${GO[@]}; do
@@ -20,7 +20,7 @@ done
 
 ## python
 PY=(
-#    $CWD/src/python/python.v1.py
+   $CWD/src/python/python.v1.py
 )
 
 for py_src in ${PY[@]}; do
@@ -35,5 +35,5 @@ SCALA=(
 
 for scala_src in ${SCALA[@]}; do
   echo "building $scala_src"
-  cat $CWD/src/scala/run_template.sh | sed "s~SRC_NAME~$scala_src~g" > $CWD/dist/scala_src.sh
+  cat $CWD/src/scala/run_template.sh | sed "s~SRC_NAME~$scala_src~g" > $CWD/dist/$(basename $scala_src).sh
 done
