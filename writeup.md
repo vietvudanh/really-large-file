@@ -10,4 +10,10 @@ go.v2: 5.151s
     using goroutine, channel
     sending lines by chunk
     sending entry by chunk
+    
+rust.v2: 25s
+    using thread
+
+rust v3: 8.62s
+    instead of `lines`, use read_line, to avoid utf-8
 
