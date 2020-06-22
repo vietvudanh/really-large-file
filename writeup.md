@@ -4,6 +4,8 @@ v1.python:
 
     no multiprocess, naive loops
 
+scala.v1: 27s
+
 go.v1: 18s
 
 go.v2: 5.151s
