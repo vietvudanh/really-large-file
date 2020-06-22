@@ -41,8 +41,9 @@ pub fn run(config: Config) {
     let start_time = SystemTime::now();
     println!("filename: {}", config.filename);
 
-    let reader = BufReader::new(File::open(config.filename)
-        .expect("Cannot open file"));
+    let mut reader = BufReader::new(
+        File::open(config.filename)
+            .expect("Cannot open file"));
 
     let mut counter: i64 = 0;
     let mut_names: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
@@ -52,29 +53,32 @@ pub fn run(config: Config) {
     let mut_max_name_val: Arc<Mutex<i32>> = Arc::new(Mutex::new(0));
 
     let mut handles = vec![];
-    let mut lines: Vec<LineIndex> = Vec::new();
-    for res in reader.lines() {
+    let lines: Arc<Mutex<Vec<LineIndex>>> = Arc::new(Mutex::new(Vec::new()));
+    let mut s = String::new();
+    loop {
+        s.clear();
         let mut eof: bool = false;
-        match res {
-            Ok(line) => {
-                lines.push(LineIndex { index: counter, line });
-                counter += 1;
-            }
-            Err(_) => {
-                eof = true;
-            }
+
+        let res = reader.read_line(&mut s);
+        if res.is_err() || res.unwrap() == 0 {
+            eof = true;
+        } else {
+            (*lines.lock().unwrap()).push(LineIndex { index: counter, line: s.clone() });
+            counter += 1;
         }
 
-        if lines.len() == BATCH_SIZE || eof {
+        if (*lines.lock().unwrap()).len() == BATCH_SIZE || eof {
             // process line
             let mut_names = Arc::clone(&mut_names);
             let mut_months = Arc::clone(&mut_months);
             let mut_fname_count = Arc::clone(&mut_fname_count);
             let mut_max_name = Arc::clone(&mut_max_name);
             let mut_max_name_val = Arc::clone(&mut_max_name_val);
+            let moved_lines = Arc::clone(&lines);
+
             let handle = thread::spawn(move || {
                 let mut entries: Vec<Entry> = Vec::new();
-                for thread_line in lines {
+                for thread_line in &(*moved_lines.lock().unwrap()) {
                     let splits: Vec<&str> = thread_line.line.splitn(9, "|").collect();
 
                     let date = splits[4];
@@ -119,9 +123,16 @@ pub fn run(config: Config) {
             handles.push(handle);
 
             // re-init lines
-            lines = Vec::new();
+            if !eof {
+                *lines.lock().unwrap() = Vec::new();
+            }
+        }
+
+        if eof {
+            break;
         }
     }
+
     for handle in handles {
         handle.join().unwrap();
     }
