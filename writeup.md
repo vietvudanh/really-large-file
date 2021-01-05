@@ -13,9 +13,10 @@ go.v2: 5.151s
     sending lines by chunk
     sending entry by chunk
     
-rust.v2: 25s
+rust.v1: 25s
     using thread
 
-rust v3: 8.62s
-    instead of `lines`, use read_line, to avoid utf-8
+rust v1.1: 15s
 
+rust v2: 11s
+	using global mutable lock with Arc.

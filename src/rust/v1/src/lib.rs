@@ -24,31 +24,38 @@ pub fn run(config: Config) {
     let start_time = SystemTime::now();
     println!("filename: {}", config.filename);
 
-    let reader = BufReader::new(File::open(config.filename)
+    let mut reader = BufReader::new(File::open(config.filename)
         .expect("Cannot open file"));
     let mut counter = 0;
     let mut names: Vec<String> = Vec::new();
     let mut months: HashMap<String, i32> = HashMap::new();
     let mut most_names: HashMap<String, i32> = HashMap::new();
 
-    for line in reader.lines() {
-        counter += 1;
-        let line = line.expect("Unable to read line");
-        let splits: Vec<&str> = line.splitn(9, "|").collect();
+    let mut s = String::new();
+    loop {
+        s.clear();
+        let res = reader.read_line(&mut s);
+        if res.is_err() || res.unwrap() == 0 {
+            break;
+        } else {
+            counter += 1;
+            let line = s.clone();
+            let splits: Vec<&str> = line.splitn(9, "|").collect();
 
-        let date = splits[4];
-        let name = splits[7];
+            let date = splits[4];
+            let name = splits[7];
 
-        let month = date[..6].to_string();
-        *months.entry(month).or_insert(0) += 1;
+            let month = date[..6].to_string();
+            *months.entry(month).or_insert(0) += 1;
 
-        if counter == 433 || counter == 43244 {
-            names.push(name.to_string());
-        }
+            if counter == 433 || counter == 43244 {
+                names.push(name.to_string());
+            }
 
-        if name.contains(", ") {
-            let split_name: Vec<&str> = name.splitn(2, ",").collect();
-            *most_names.entry(split_name[0].to_string()).or_insert(0) += 1;
+            if name.contains(", ") {
+                let split_name: Vec<&str> = name.splitn(2, ",").collect();
+                *most_names.entry(split_name[0].to_string()).or_insert(0) += 1;
+            }
         }
     }
     let elapsed_read_lines = start_time.elapsed().expect("error time lines");

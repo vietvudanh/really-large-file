@@ -6,7 +6,7 @@ use std::thread;
 use std::time::SystemTime;
 
 // constants
-const BATCH_SIZE: usize = 64 * 1024; // process in each thread
+const BATCH_SIZE: usize = 512 * 1024; // process in each thread
 
 pub struct Config {
     filename: String
@@ -22,6 +22,14 @@ struct Entry {
 struct LineIndex {
     index: i64,
     line: String,
+}
+impl Clone for LineIndex {
+    fn clone(&self) -> LineIndex {
+        LineIndex {
+            index: (*self).index,
+            line: (*self).line.to_string(),
+        }
+    }
 }
 
 impl Config {
@@ -53,7 +61,7 @@ pub fn run(config: Config) {
     let mut_max_name_val: Arc<Mutex<i32>> = Arc::new(Mutex::new(0));
 
     let mut handles = vec![];
-    let lines: Arc<Mutex<Vec<LineIndex>>> = Arc::new(Mutex::new(Vec::new()));
+    let mut lines: Vec<LineIndex> = Vec::new();
     let mut s = String::new();
     loop {
         s.clear();
@@ -63,22 +71,23 @@ pub fn run(config: Config) {
         if res.is_err() || res.unwrap() == 0 {
             eof = true;
         } else {
-            (*lines.lock().unwrap()).push(LineIndex { index: counter, line: s.clone() });
             counter += 1;
+            lines.push(LineIndex { index: counter, line: s.clone() });
         }
 
-        if (*lines.lock().unwrap()).len() == BATCH_SIZE || eof {
+        if lines.len() == BATCH_SIZE || eof {
             // process line
+            let lines_clone = lines.clone();
+
             let mut_names = Arc::clone(&mut_names);
             let mut_months = Arc::clone(&mut_months);
             let mut_fname_count = Arc::clone(&mut_fname_count);
             let mut_max_name = Arc::clone(&mut_max_name);
             let mut_max_name_val = Arc::clone(&mut_max_name_val);
-            let moved_lines = Arc::clone(&lines);
 
             let handle = thread::spawn(move || {
                 let mut entries: Vec<Entry> = Vec::new();
-                for thread_line in &(*moved_lines.lock().unwrap()) {
+                for thread_line in &lines_clone {
                     let splits: Vec<&str> = thread_line.line.splitn(9, "|").collect();
 
                     let date = splits[4];
@@ -124,7 +133,7 @@ pub fn run(config: Config) {
 
             // re-init lines
             if !eof {
-                *lines.lock().unwrap() = Vec::new();
+                lines = Vec::new();
             }
         }
 

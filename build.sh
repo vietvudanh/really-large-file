@@ -10,7 +10,7 @@ rm "$CWD/dist/"*
 # build
 ## go
 GO=(
-     $CWD/src/go/v1
+#     $CWD/src/go/v3
     )
 
 for go_src in "${GO[@]}"; do
@@ -44,12 +44,20 @@ done
 
 ## rust
 RUST_DIR=(
-    $CWD/src/rust/v1/
+    $CWD/src/rust/v2/
+#    $CWD/src/rust/v1/
 )
 for rust_dir in "${RUST_DIR[@]}"; do
     echo "building $rust_dir"
     cd "$rust_dir"
+    vname=$(basename $rust_dir)
+    cargo clean
     cargo build --release
-    find target/release -perm +111 -depth 1 -type f | xargs -I {} cp {} $CWD/dist
-    cd -
+    file=$(find target/release -maxdepth 1 -type f -executable)
+    bname=$(basename $file)
+    cp "$file" "$CWD/dist/${bname}_${vname}"
 done
+
+echo
+echo "building dist done"
+ls -lah "$CWD/dist"
