@@ -34,17 +34,19 @@ in each implementation, since there's no committed sample/fixture to run tests a
 ## Repo layout
 
 ```
-src/go/v0..v3       Go attempts, in increasing sophistication:
+src/go/v0..v4       Go attempts, in increasing sophistication:
                       v0 - naive line count only
                       v1 - full 4 tasks, single-threaded
                       v2 - goroutines + channels, chunked line processing
                       v3 - goroutines + a shared mutex instead of a fan-in channel
+                      v4 - pread + work-stealing chunks, zero-alloc parse; I/O-bound
+                           (fastest; see its readme for the macOS mmap lesson)
 src/go/v9_marc       A later/alternate Go attempt (object pooling with sync.Pool for
                       line/entry slices, atomic counters); "v9" is not part of the v0-v3 sequence.
-src/rust/v0..v2       Rust attempts: v0 spawns threads per batch but doesn't reduce results,
-                      v1 introduces batching, v2 (current "best") uses Arc<Mutex<...>> shared
-                      state across worker threads. src/rust/v2/readme.md notes it "adds a
-                      threading mechanism."
+src/rust/v0..v3       Rust attempts: v0 spawns threads per batch but doesn't reduce results,
+                      v1 introduces batching, v2 uses Arc<Mutex<...>> shared state across
+                      worker threads, v3 (fastest) is pread + work-stealing chunks with
+                      memchr/FxHashMap and cargo release tuning (see its readme).
 src/rust/test_read.rs Standalone scratch/experiment file, not part of any crate.
 src/scala/            scala.v1.scala / main.v1.scala - single-threaded Scala version;
                       run via run_template.sh (invokes `scala SRC_NAME <file>`).

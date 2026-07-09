@@ -10,6 +10,7 @@ rm "$CWD/dist/"*
 # build
 ## go
 GO=(
+    $CWD/src/go/v4
 #     $CWD/src/go/v3
     )
 
@@ -44,7 +45,8 @@ done
 
 ## rust
 RUST_DIR=(
-    $CWD/src/rust/v2/
+    $CWD/src/rust/v3/
+#    $CWD/src/rust/v2/
 #    $CWD/src/rust/v1/
 )
 for rust_dir in "${RUST_DIR[@]}"; do
