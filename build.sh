@@ -10,6 +10,7 @@ rm "$CWD/dist/"*
 # build
 ## go
 GO=(
+    $CWD/src/go/v4
 #     $CWD/src/go/v3
     )
 
@@ -44,7 +45,8 @@ done
 
 ## rust
 RUST_DIR=(
-    $CWD/src/rust/v2/
+    $CWD/src/rust/v3/
+#    $CWD/src/rust/v2/
 #    $CWD/src/rust/v1/
 )
 for rust_dir in "${RUST_DIR[@]}"; do
@@ -53,7 +55,7 @@ for rust_dir in "${RUST_DIR[@]}"; do
     vname=$(basename $rust_dir)
     cargo clean
     cargo build --release
-    file=$(find target/release -maxdepth 1 -type f -executable)
+    file=$(find target/release -maxdepth 1 -type f -perm +111)
     bname=$(basename $file)
     cp "$file" "$CWD/dist/${bname}_${vname}"
 done
