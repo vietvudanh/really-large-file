@@ -1,0 +1,6 @@
+[[33mwarn[0m] ./src/scala/scala.v1.scala:13:18
+[[33mwarn[0m] [33mmethod[0m [32mgetLines[0m must be called with () argument
+[[33mwarn[0m]     for (line <- Source.fromFile(filePath).getLines) {
+[[33mwarn[0m]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+processing file:: /Users/vietvu/data/misc/itcont.txt
+line:: 21730731

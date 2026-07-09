@@ -53,7 +53,7 @@ for rust_dir in "${RUST_DIR[@]}"; do
     vname=$(basename $rust_dir)
     cargo clean
     cargo build --release
-    file=$(find target/release -maxdepth 1 -type f -executable)
+    file=$(find target/release -maxdepth 1 -type f -perm +111)
     bname=$(basename $file)
     cp "$file" "$CWD/dist/${bname}_${vname}"
 done
